@@ -87,12 +87,12 @@ export default function ProfilePage() {
               <img
                 src={isEditing ? editData.profilePic : profileData.profilePic}
                 alt="Profile"
-                className="w-24 h-24 rounded-full object-cover"
+                className="w-24 h-24 object-cover"
                 style={{ border: `2px solid var(--geist-accents-2)` }}
               />
               {isEditing && (
                 <button
-                  className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center"
+                  className="absolute -bottom-2 -right-2 w-8 h-8 flex items-center justify-center"
                   style={{ background: "var(--geist-foreground)", color: "var(--geist-background)" }}
                 >
                   ✎
@@ -162,12 +162,12 @@ export default function ProfilePage() {
               {(isEditing ? editData.socialLinks : profileData.socialLinks).map((link, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-3 rounded-lg"
+                  className="flex items-center justify-between p-3"
                   style={{ background: "var(--geist-accents-1)" }}
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center"
+                      className="w-8 h-8 flex items-center justify-center"
                       style={{ background: "var(--geist-foreground)", color: "var(--geist-background)" }}
                     >
                       {link.platform.charAt(0)}
@@ -206,7 +206,7 @@ export default function ProfilePage() {
             {/* Add New Social Link */}
             {isEditing && (
               <div
-                className="p-4 rounded-lg"
+                className="p-4"
                 style={{ background: "var(--geist-accents-1)", border: `1px dashed var(--geist-accents-3)` }}
               >
                 <h4 className="font-medium mb-3" style={{ color: "var(--geist-foreground)" }}>

@@ -182,12 +182,7 @@ export default function RidePage({ params }) {
       <Card>
         {/* Added Google Map at the top */}
         <div>
-          <GoogleMap
-            center={ride.mapCenter}
-            zoom={11}
-            markers={ride.routeMarkers}
-            className="w-full h-96 rounded-t-lg"
-          />
+          <GoogleMap center={ride.mapCenter} zoom={11} markers={ride.routeMarkers} className="w-full h-96" />
         </div>
 
         <CardHeader>
@@ -195,7 +190,7 @@ export default function RidePage({ params }) {
             <img
               src={ride.rider.avatar || "/placeholder.svg"}
               alt={`${ride.rider.username} avatar`}
-              className="w-12 h-12 rounded-full bg-gray-200"
+              className="w-12 h-12 bg-gray-200"
             />
             <div>
               <p className="font-bold text-black">{ride.rider.username}</p>
@@ -223,7 +218,7 @@ export default function RidePage({ params }) {
                     <img
                       src={rider.avatar || "/placeholder.svg"}
                       alt={`${rider.username} avatar`}
-                      className="w-6 h-6 rounded-full bg-gray-200"
+                      className="w-6 h-6 bg-gray-200"
                     />
                     <span className="text-gray-600">{rider.username}</span>
                   </div>
@@ -238,7 +233,7 @@ export default function RidePage({ params }) {
             <img
               src={ride.routeImage || "/placeholder.svg"}
               alt={`Route map for ${ride.title}`}
-              className="w-full h-64 object-cover rounded-lg bg-gray-100"
+              className="w-full h-64 object-cover bg-gray-100"
             />
           </div>
 
@@ -258,7 +253,7 @@ export default function RidePage({ params }) {
           </div>
 
           {/* Added Weather Conditions Section */}
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+          <div className="mb-6 p-4 bg-gray-50">
             <h3 className="font-bold text-black mb-3">Weather Conditions</h3>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <div className="text-center">
@@ -293,7 +288,7 @@ export default function RidePage({ params }) {
                   <img
                     src={image.url || "/placeholder.svg"}
                     alt={image.caption}
-                    className="w-full h-32 object-cover rounded-lg bg-gray-100 group-hover:opacity-90 transition-opacity"
+                    className="w-full h-32 object-cover bg-gray-100 group-hover:opacity-90 transition-opacity"
                   />
                   <p className="text-sm text-gray-600 mt-1">{image.timestamp}</p>
                 </div>
@@ -311,9 +306,9 @@ export default function RidePage({ params }) {
                 <img
                   src={selectedImage.url || "/placeholder.svg"}
                   alt={selectedImage.caption}
-                  className="max-w-full max-h-full object-contain rounded-lg"
+                  className="max-w-full max-h-full object-contain"
                 />
-                <div className="bg-white p-4 rounded-b-lg">
+                <div className="bg-white p-4">
                   <p className="font-medium text-black">{selectedImage.caption}</p>
                   <p className="text-sm text-gray-600">{selectedImage.timestamp}</p>
                 </div>
@@ -325,7 +320,7 @@ export default function RidePage({ params }) {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setLikedRide(!likedRide)}
-                className={`flex items-center gap-2 px-3 py-1 rounded-md transition-colors ${
+                className={`flex items-center gap-2 px-3 py-1 transition-colors ${
                   likedRide ? "bg-black text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
@@ -336,7 +331,7 @@ export default function RidePage({ params }) {
 
             <button
               onClick={() => setBookmarkedRide(!bookmarkedRide)}
-              className={`px-3 py-1 rounded-md transition-colors ${
+              className={`px-3 py-1 transition-colors ${
                 bookmarkedRide ? "bg-black text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
@@ -353,7 +348,7 @@ export default function RidePage({ params }) {
                   <img
                     src={comment.avatar || "/placeholder.svg"}
                     alt={`${comment.username} avatar`}
-                    className="w-8 h-8 rounded-full bg-gray-200"
+                    className="w-8 h-8 bg-gray-200"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
@@ -372,7 +367,7 @@ export default function RidePage({ params }) {
                 placeholder="Add a comment..."
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md"
+                className="flex-1 px-3 py-2 border border-gray-300"
                 onKeyPress={(e) => e.key === "Enter" && handleAddComment()}
               />
               <Button onClick={handleAddComment} disabled={!newComment.trim()}>

@@ -6,83 +6,46 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { GoogleMap } from "@/components/google-map"
 
-// ---------- DUMMY RIDES ----------
-const myRides = [
-  {
-    id: 1,
-    title: "Morning Canyon Run",
-    location: "Angeles Crest Highway Loop",
-    distance: "87.3 miles",
-    duration: "2h 15min",
-    avgSpeed: "38.8 mph",
-    motorcycle: "Yamaha MT-09",
-    timestamp: "3 days ago",
-    mapCenter: { lat: 34.2804, lng: -118.0104 },
-    routeMarkers: [
-      { lat: 34.2804, lng: -118.0104, title: "Start" },
-      { lat: 34.3774, lng: -117.9048, title: "End" },
-    ],
-    rideWith: [],
-    initialLikes: 5,
-    initialComments: 2,
-  },
-  {
-    id: 2,
-    title: "Weekend Coastal Cruise",
-    location: "Pacific Coast Highway",
-    distance: "156.2 miles",
-    duration: "4h 30min",
-    avgSpeed: "34.7 mph",
-    motorcycle: "Honda CB650R",
-    timestamp: "5 days ago",
-    mapCenter: { lat: 36.4581, lng: -121.9018 },
-    routeMarkers: [
-      { lat: 36.4581, lng: -121.9018, title: "Start" },
-      { lat: 36.0827, lng: -121.6564, title: "End" },
-    ],
-    rideWith: [],
-    initialLikes: 8,
-    initialComments: 3,
-  },
-  {
-    id: 3,
-    title: "Evening City Ride",
-    location: "Downtown Circuit",
-    distance: "23.2 miles",
-    duration: "1h 15min",
-    avgSpeed: "18.6 mph",
-    motorcycle: "Yamaha MT-09",
-    timestamp: "1 day ago",
-    mapCenter: { lat: 34.0522, lng: -118.2437 },
-    routeMarkers: [
-      { lat: 34.0522, lng: -118.2437, title: "Start" },
-      { lat: 34.0928, lng: -118.3287, title: "End" },
-    ],
-    rideWith: [],
-    initialLikes: 3,
-    initialComments: 1,
-  },
-]
-// ----------------------------------
-
-export default function MyRidesPage() {
+export function MyRidesClient({ rides }) {
   const router = useRouter()
-  const [likedRides, setLikedRides] = useState<Set<number>>(new Set())
-  const [bookmarkedRides, setBookmarkedRides] = useState<Set<number>>(new Set())
+  const [likedRides, setLikedRides] = useState(new Set())
+  const [bookmarkedRides, setBookmarkedRides] = useState(new Set())
 
-  const navigateToRide = (id: number) => router.push(`/ride/${id}`)
-  const toggleLike = (id: number) =>
-    setLikedRides((prev) => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
-  const toggleBookmark = (id: number) =>
-    setBookmarkedRides((prev) => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
+  const navigateToRide = (rideId) => {
+    router.push(`/ride/${rideId}`)
+  }
+
+  const toggleLike = (rideId) => {
+    const newLikedRides = new Set(likedRides)
+    if (newLikedRides.has(rideId)) {
+      newLikedRides.delete(rideId)
+    } else {
+      newLikedRides.add(rideId)
+    }
+    setLikedRides(newLikedRides)
+  }
+
+  const toggleBookmark = (rideId) => {
+    const newBookmarkedRides = new Set(bookmarkedRides)
+    if (newBookmarkedRides.has(rideId)) {
+      newBookmarkedRides.delete(rideId)
+    } else {
+      newBookmarkedRides.add(rideId)
+    }
+    setBookmarkedRides(newBookmarkedRides)
+  }
+
+  const formatTimeAgo = (dateString) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+
+    if (diffInHours < 1) return "Just now"
+    if (diffInHours < 24) return `${diffInHours} hours ago`
+    const diffInDays = Math.floor(diffInHours / 24)
+    if (diffInDays === 1) return "1 day ago"
+    return `${diffInDays} days ago`
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
@@ -95,10 +58,24 @@ export default function MyRidesPage() {
       </div>
 
       <div className="space-y-6">
-        {myRides.map((ride) => (
+        {rides?.map((ride) => (
           <Card key={ride.id} className="transition-shadow mx-auto" style={{ maxWidth: "800px" }}>
-            {/* Map */}
-            <GoogleMap center={ride.mapCenter} zoom={11} markers={ride.routeMarkers} className="w-full h-96" />
+            {/* Show map if we have GPS coordinates */}
+            {ride.start_latitude && ride.start_longitude && (
+              <div>
+                <GoogleMap
+                  center={{ lat: ride.start_latitude, lng: ride.start_longitude }}
+                  zoom={11}
+                  markers={[
+                    { lat: ride.start_latitude, lng: ride.start_longitude, title: "Start" },
+                    ...(ride.end_latitude && ride.end_longitude
+                      ? [{ lat: ride.end_latitude, lng: ride.end_longitude, title: "End" }]
+                      : []),
+                  ]}
+                  className="w-full h-96"
+                />
+              </div>
+            )}
 
             <CardHeader>
               <div className="flex items-center gap-3 mb-4">
@@ -107,13 +84,17 @@ export default function MyRidesPage() {
                 </div>
                 <div>
                   <p className="font-bold text-black">You</p>
-                  <p className="text-gray-500">{ride.timestamp}</p>
+                  <p className="text-gray-500">{formatTimeAgo(ride.created_at)}</p>
                 </div>
               </div>
 
               <button
                 className="text-xl mb-2 cursor-pointer hover:text-gray-700 transition-colors font-bold text-left w-full"
-                onClick={() => navigateToRide(ride.id)}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  navigateToRide(ride.id)
+                }}
               >
                 {ride.title}
               </button>
@@ -121,24 +102,24 @@ export default function MyRidesPage() {
 
               <div className="mb-4">
                 <p className="text-gray-600">
-                  <span className="font-medium">Rode:</span> {ride.motorcycle}
+                  <span className="font-medium">Rode:</span> {ride.motorcycles?.name || "Unknown Motorcycle"}
                 </p>
               </div>
 
-              {ride.rideWith.length > 0 && (
+              {ride.ride_participants?.length > 0 && (
                 <div className="mb-4">
                   <p className="text-gray-600 mb-2">
                     <span className="font-medium">Rode with:</span>
                   </p>
                   <div className="flex items-center gap-2">
-                    {ride.rideWith.map((rider, index) => (
+                    {ride.ride_participants.map((participant, index) => (
                       <div key={index} className="flex items-center gap-1">
                         <img
-                          src={rider.avatar || "/placeholder.svg"}
-                          alt={`${rider.username} avatar`}
+                          src={participant.profiles?.avatar_url || "/placeholder.svg?height=24&width=24"}
+                          alt={`${participant.profiles?.username} avatar`}
                           className="w-6 h-6 bg-gray-200"
                         />
-                        <span className="text-gray-900">{rider.username}</span>
+                        <span className="text-gray-900">{participant.profiles?.username}</span>
                       </div>
                     ))}
                   </div>
@@ -149,15 +130,19 @@ export default function MyRidesPage() {
             <CardContent>
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div className="text-center">
-                  <p className="font-bold text-black">{ride.distance}</p>
+                  <p className="font-bold text-black">{ride.distance_miles ? `${ride.distance_miles} mi` : "N/A"}</p>
                   <p className="text-gray-600">Distance</p>
                 </div>
                 <div className="text-center">
-                  <p className="font-bold text-black">{ride.duration}</p>
+                  <p className="font-bold text-black">
+                    {ride.duration_minutes
+                      ? `${Math.floor(ride.duration_minutes / 60)}h ${ride.duration_minutes % 60}m`
+                      : "N/A"}
+                  </p>
                   <p className="text-gray-600">Duration</p>
                 </div>
                 <div className="text-center">
-                  <p className="font-bold text-black">{ride.avgSpeed}</p>
+                  <p className="font-bold text-black">{ride.avg_speed_mph ? `${ride.avg_speed_mph} mph` : "N/A"}</p>
                   <p className="text-gray-600">Avg Speed</p>
                 </div>
               </div>
@@ -171,15 +156,12 @@ export default function MyRidesPage() {
                     }`}
                   >
                     <span>{likedRides.has(ride.id) ? "♥" : "♡"}</span>
-                    <span>{ride.initialLikes + (likedRides.has(ride.id) ? 1 : 0)}</span>
+                    <span>{ride.likes_count + (likedRides.has(ride.id) ? 1 : 0)}</span>
                   </button>
 
-                  <button
-                    onClick={() => navigateToRide(ride.id)}
-                    className="flex items-center gap-2 px-3 py-1 bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
-                  >
+                  <button className="flex items-center gap-2 px-3 py-1 bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
                     <span>💬</span>
-                    <span>{ride.initialComments}</span>
+                    <span>{ride.comments_count}</span>
                   </button>
                 </div>
 
@@ -196,7 +178,7 @@ export default function MyRidesPage() {
           </Card>
         ))}
 
-        {myRides.length === 0 && (
+        {(!rides || rides.length === 0) && (
           <Card className="text-center py-12">
             <CardContent>
               <div className="w-12 h-12 bg-black flex items-center justify-center mx-auto mb-4">

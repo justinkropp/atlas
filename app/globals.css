@@ -33,14 +33,13 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  /* Geist Button Styles */
+  /* Geist Button Styles - removed border-radius */
   .geist-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 0 16px;
     height: 32px;
-    border-radius: 6px;
     font-weight: 400;
     font-size: 14px;
     line-height: 1;
@@ -71,27 +70,24 @@
     border-color: var(--geist-foreground);
   }
 
-  /* Geist Card Styles */
+  /* Geist Card Styles - removed border-radius and box-shadow */
   .geist-card {
     background: var(--geist-background);
     border: 1px solid var(--geist-accents-2);
-    border-radius: 8px;
     padding: 24px;
     transition: all 0.2s ease;
   }
 
   .geist-card:hover {
     border-color: var(--geist-accents-3);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   }
 
-  /* Geist Input Styles */
+  /* Geist Input Styles - removed border-radius */
   .geist-input {
     width: 100%;
     height: 40px;
     padding: 0 12px;
     border: 1px solid var(--geist-accents-2);
-    border-radius: 6px;
     background: var(--geist-background);
     color: var(--geist-foreground);
     font-size: 14px;
@@ -107,13 +103,12 @@
     color: var(--geist-accents-4);
   }
 
-  /* Geist Badge Styles */
+  /* Geist Badge Styles - removed border-radius */
   .geist-badge {
     display: inline-flex;
     align-items: center;
     padding: 0 8px;
     height: 20px;
-    border-radius: 4px;
     font-size: 12px;
     font-weight: 500;
     text-transform: uppercase;

@@ -3,10 +3,9 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardDescription } from "@/components/ui/card"
-// Added GoogleMap component import
 import { GoogleMap } from "@/components/google-map"
 
-// Updated to show activities from other riders the user follows
+// Dummy activity data
 const followedRiderActivities = [
   {
     id: 1,
@@ -24,7 +23,6 @@ const followedRiderActivities = [
       { username: "speed_demon", avatar: "/placeholder.svg?height=32&width=32" },
       { username: "mountain_rider", avatar: "/placeholder.svg?height=32&width=32" },
     ],
-    // Added map coordinates for Angeles Crest Highway
     mapCenter: { lat: 34.2804, lng: -118.0104 },
     routeMarkers: [
       { lat: 34.2804, lng: -118.0104, title: "Start - Angeles Crest Highway" },
@@ -48,7 +46,6 @@ const followedRiderActivities = [
     avgSpeed: "35.7 mph",
     motorcycle: "Honda CB650R",
     rideWith: [],
-    // Added map coordinates for Big Sur
     mapCenter: { lat: 36.2704, lng: -121.8081 },
     routeMarkers: [
       { lat: 36.4581, lng: -121.9018, title: "Start - Carmel" },
@@ -72,7 +69,6 @@ const followedRiderActivities = [
     avgSpeed: "36.2 mph",
     motorcycle: "Kawasaki Ninja ZX-6R",
     rideWith: [{ username: "track_master", avatar: "/placeholder.svg?height=32&width=32" }],
-    // Added map coordinates for Laguna Seca
     mapCenter: { lat: 36.5844, lng: -121.7536 },
     routeMarkers: [{ lat: 36.5844, lng: -121.7536, title: "Laguna Seca Raceway" }],
     routeImage: "/placeholder.svg?height=200&width=400",
@@ -97,7 +93,6 @@ const followedRiderActivities = [
       { username: "off_road_king", avatar: "/placeholder.svg?height=32&width=32" },
       { username: "adventure_buddy", avatar: "/placeholder.svg?height=32&width=32" },
     ],
-    // Added map coordinates for Joshua Tree
     mapCenter: { lat: 33.8734, lng: -115.901 },
     routeMarkers: [
       { lat: 33.8734, lng: -115.901, title: "Joshua Tree National Park" },
@@ -121,7 +116,6 @@ const followedRiderActivities = [
     avgSpeed: "25.5 mph",
     motorcycle: "Vespa GTS 300",
     rideWith: [],
-    // Added map coordinates for Downtown LA
     mapCenter: { lat: 34.0522, lng: -118.2437 },
     routeMarkers: [
       { lat: 34.0522, lng: -118.2437, title: "Downtown LA" },
@@ -136,38 +130,30 @@ const followedRiderActivities = [
 
 export default function ActivityPage() {
   const router = useRouter()
-  // Added state for tracking likes and bookmarks
-  const [likedRides, setLikedRides] = useState(new Set())
-  const [bookmarkedRides, setBookmarkedRides] = useState(new Set())
-  // Removed selectedRide and newComment state since we're using separate pages now
 
-  // Added function to navigate to individual ride page
-  const navigateToRide = (rideId) => {
-    router.push(`/ride/${rideId}`)
+  // local state for likes / bookmarks
+  const [likedRides, setLikedRides] = useState<Set<number>>(new Set())
+  const [bookmarkedRides, setBookmarkedRides] = useState<Set<number>>(new Set())
+
+  const navigateToRide = (rideId: number) => router.push(`/ride/${rideId}`)
+
+  const toggleLike = (rideId: number) => {
+    setLikedRides((prev) => {
+      const next = new Set(prev)
+      next.has(rideId) ? next.delete(rideId) : next.add(rideId)
+      return next
+    })
   }
 
-  // Added function to handle like toggle
-  const toggleLike = (rideId) => {
-    const newLikedRides = new Set(likedRides)
-    if (newLikedRides.has(rideId)) {
-      newLikedRides.delete(rideId)
-    } else {
-      newLikedRides.add(rideId)
-    }
-    setLikedRides(newLikedRides)
+  const toggleBookmark = (rideId: number) => {
+    setBookmarkedRides((prev) => {
+      const next = new Set(prev)
+      next.has(rideId) ? next.delete(rideId) : next.add(rideId)
+      return next
+    })
   }
 
-  // Added function to handle bookmark toggle
-  const toggleBookmark = (rideId) => {
-    const newBookmarkedRides = new Set(bookmarkedRides)
-    if (newBookmarkedRides.has(rideId)) {
-      newBookmarkedRides.delete(rideId)
-    } else {
-      newBookmarkedRides.add(rideId)
-    }
-    setBookmarkedRides(newBookmarkedRides)
-  }
-
+  // ---------- UI ----------
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       <div className="mb-8">
@@ -176,65 +162,55 @@ export default function ActivityPage() {
       </div>
 
       <div className="space-y-6">
-        {followedRiderActivities.map((activity) => (
-          <Card key={activity.id} className="hover:shadow-md transition-shadow mx-auto" style={{ maxWidth: "800px" }}>
-            {/* Added max-width of 800px to each ride container */}
-            {/* Replaced placeholder image with Google Map */}
-            <div>
-              <GoogleMap
-                center={activity.mapCenter}
-                zoom={11}
-                markers={activity.routeMarkers}
-                className="w-full h-96 rounded-t-lg"
-              />
-            </div>
+        {followedRiderActivities.map((ride) => (
+          <Card key={ride.id} className="transition-shadow mx-auto" style={{ maxWidth: "800px" }}>
+            {/* Map */}
+            <GoogleMap center={ride.mapCenter} zoom={11} markers={ride.routeMarkers} className="w-full h-96" />
 
             <CardHeader>
+              {/* Rider */}
               <div className="flex items-center gap-3 mb-4">
                 <img
-                  src={activity.rider.avatar || "/placeholder.svg"}
-                  alt={`${activity.rider.username} avatar`}
-                  className="w-10 h-10 rounded-full bg-gray-200"
+                  src={ride.rider.avatar || "/placeholder.svg"}
+                  alt={`${ride.rider.username} avatar`}
+                  className="w-10 h-10 bg-gray-200"
                 />
                 <div>
-                  <p className="font-bold text-black">{activity.rider.username}</p>
-                  <p className="text-gray-500">{activity.timestamp}</p>
+                  <p className="font-bold text-black">{ride.rider.username}</p>
+                  <p className="text-gray-500">{ride.timestamp}</p>
                 </div>
               </div>
 
-              {/* Fixed the title to use a proper clickable button instead of CardTitle onClick */}
+              {/* Title */}
               <button
                 className="text-xl mb-2 cursor-pointer hover:text-gray-700 transition-colors font-bold text-left w-full"
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  navigateToRide(activity.id)
-                }}
+                onClick={() => navigateToRide(ride.id)}
               >
-                {activity.title}
+                {ride.title}
               </button>
-              <CardDescription className="text-gray-600 mb-4">{activity.location}</CardDescription>
+              <CardDescription className="text-gray-600 mb-4">{ride.location}</CardDescription>
 
               <div className="mb-4">
                 <p className="text-gray-600">
-                  <span className="font-medium">Rode:</span> {activity.motorcycle}
+                  <span className="font-medium">Rode:</span> {ride.motorcycle}
                 </p>
               </div>
 
-              {activity.rideWith.length > 0 && (
+              {/* Group ride */}
+              {ride.rideWith.length > 0 && (
                 <div className="mb-4">
                   <p className="text-gray-600 mb-2">
                     <span className="font-medium">Rode with:</span>
                   </p>
                   <div className="flex items-center gap-2">
-                    {activity.rideWith.map((rider, index) => (
-                      <div key={index} className="flex items-center gap-1">
+                    {ride.rideWith.map((r, i) => (
+                      <div key={i} className="flex items-center gap-1">
                         <img
-                          src={rider.avatar || "/placeholder.svg"}
-                          alt={`${rider.username} avatar`}
-                          className="w-6 h-6 rounded-full bg-gray-200"
+                          src={r.avatar || "/placeholder.svg"}
+                          alt={`${r.username} avatar`}
+                          className="w-6 h-6 bg-gray-200"
                         />
-                        <span className="text-gray-600">{rider.username}</span>
+                        <span className="text-gray-600">{r.username}</span>
                       </div>
                     ))}
                   </div>
@@ -243,74 +219,69 @@ export default function ActivityPage() {
             </CardHeader>
 
             <CardContent>
-              {/* Removed route image from here since it's now at the top */}
-
+              {/* Stats */}
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div className="text-center">
-                  <p className="font-bold text-black">{activity.distance}</p>
+                  <p className="font-bold text-black">{ride.distance}</p>
                   <p className="text-gray-600">Distance</p>
                 </div>
                 <div className="text-center">
-                  <p className="font-bold text-black">{activity.duration}</p>
+                  <p className="font-bold text-black">{ride.duration}</p>
                   <p className="text-gray-600">Duration</p>
                 </div>
                 <div className="text-center">
-                  <p className="font-bold text-black">{activity.avgSpeed}</p>
+                  <p className="font-bold text-black">{ride.avgSpeed}</p>
                   <p className="text-gray-600">Avg Speed</p>
                 </div>
               </div>
 
+              {/* Like / bookmark */}
               <div className="flex items-center justify-between pt-4 border-t">
                 <div className="flex items-center gap-4">
                   <button
-                    onClick={() => toggleLike(activity.id)}
-                    className={`flex items-center gap-2 px-3 py-1 rounded-md transition-colors ${
-                      likedRides.has(activity.id)
-                        ? "bg-black text-white"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    onClick={() => toggleLike(ride.id)}
+                    className={`flex items-center gap-2 px-3 py-1 transition-colors ${
+                      likedRides.has(ride.id) ? "bg-black text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                   >
-                    <span>{likedRides.has(activity.id) ? "♥" : "♡"}</span>
-                    <span>{activity.initialLikes + (likedRides.has(activity.id) ? 1 : 0)}</span>
+                    <span>{likedRides.has(ride.id) ? "♥" : "♡"}</span>
+                    <span>{ride.initialLikes + (likedRides.has(ride.id) ? 1 : 0)}</span>
                   </button>
 
-                  {/* Updated comment button to navigate to ride page */}
                   <button
-                    onClick={() => navigateToRide(activity.id)}
-                    className="flex items-center gap-2 px-3 py-1 rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                    onClick={() => navigateToRide(ride.id)}
+                    className="flex items-center gap-2 px-3 py-1 bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
                   >
                     <span>💬</span>
-                    <span>{activity.initialComments}</span>
+                    <span>{ride.initialComments}</span>
                   </button>
                 </div>
 
                 <button
-                  onClick={() => toggleBookmark(activity.id)}
-                  className={`px-3 py-1 rounded-md transition-colors ${
-                    bookmarkedRides.has(activity.id)
-                      ? "bg-black text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  onClick={() => toggleBookmark(ride.id)}
+                  className={`px-3 py-1 transition-colors ${
+                    bookmarkedRides.has(ride.id) ? "bg-black text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
                 >
-                  {bookmarkedRides.has(activity.id) ? "★" : "☆"}
+                  {bookmarkedRides.has(ride.id) ? "★" : "☆"}
                 </button>
               </div>
             </CardContent>
           </Card>
         ))}
-      </div>
 
-      {followedRiderActivities.length === 0 && (
-        <Card className="text-center py-12">
-          <CardContent>
-            <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-white font-bold">F</span>
-            </div>
-            <h3 className="font-bold text-black mb-2">No activity yet</h3>
-            <p className="text-gray-600 mb-4">Follow other riders to see their rides in your feed</p>
-          </CardContent>
-        </Card>
-      )}
+        {followedRiderActivities.length === 0 && (
+          <Card className="text-center py-12">
+            <CardContent>
+              <div className="w-12 h-12 bg-black flex items-center justify-center mx-auto mb-4">
+                <span className="text-white font-bold">F</span>
+              </div>
+              <h3 className="font-bold text-black mb-2">No activity yet</h3>
+              <p className="text-gray-600 mb-4">Follow other riders to see their rides in your feed</p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   )
 }

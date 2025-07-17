@@ -1,5 +1,6 @@
+// Added 1px border to all cards
 export const Card = ({ children, className }) => (
-  <div className={`bg-white rounded-lg shadow-md overflow-hidden ${className}`}>{children}</div>
+  <div className={`bg-white border border-gray-200 overflow-hidden ${className}`}>{children}</div>
 )
 
 export const CardContent = ({ children, className }) => <div className={`p-4 ${className}`}>{children}</div>

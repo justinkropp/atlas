@@ -16,7 +16,7 @@ export function ClientGoogleMap({
   markers = [],
   className = "w-full h-48",
 }: ClientGoogleMapProps) {
-  const [apiKey, setApiKey] = useState<string | null>(null)
+  const [apiKey, setApiKey] = useState<string>("")
 
   useEffect(() => {
     fetch("/api/maps-key")
@@ -25,17 +25,16 @@ export function ClientGoogleMap({
       .catch(() => setApiKey(""))
   }, [])
 
-  if (apiKey === null) {
-    // Still loading
-    return <div className={`${className} bg-gray-100 rounded-lg`} />
-  }
-
-  if (!apiKey) {
+  if (apiKey === "") {
+    // Key missing or invalid – instruct project owners how to fix
     return (
-      <div className={`${className} bg-gray-100 flex items-center justify-center rounded-lg`}>
-        <div className="text-center p-4">
-          <p className="text-gray-600 mb-2">Google Maps API Key Required</p>
-          <p className="text-sm text-gray-500">Add it in Project Settings.</p>
+      <div className={`${className} bg-gray-100 flex items-center justify-center`}>
+        <div className="text-center p-4 max-w-sm">
+          <p className="font-semibold text-gray-800 mb-2">Google Maps API key not found</p>
+          <p className="text-sm text-gray-600">
+            Add <code>GOOGLE_MAPS_API_KEY</code> to your project’s Environment Variables and make sure the “Maps
+            JavaScript API” is enabled with billing turned on.
+          </p>
         </div>
       </div>
     )
