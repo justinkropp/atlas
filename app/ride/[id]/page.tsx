@@ -4,6 +4,8 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+// Added GoogleMap import for individual ride page
+import { GoogleMap } from "@/components/google-map"
 
 // Mock data for rides - in a real app this would come from an API
 const rideData = {
@@ -23,10 +25,47 @@ const rideData = {
       { username: "speed_demon", avatar: "/placeholder.svg?height=32&width=32" },
       { username: "mountain_rider", avatar: "/placeholder.svg?height=32&width=32" },
     ],
+    // Added map data for individual ride view
+    mapCenter: { lat: 34.2804, lng: -118.0104 },
+    routeMarkers: [
+      { lat: 34.2804, lng: -118.0104, title: "Start - Angeles Crest Highway" },
+      { lat: 34.3774, lng: -117.9048, title: "End - Wrightwood" },
+    ],
     routeImage: "/placeholder.svg?height=400&width=800",
     timestamp: "2 hours ago",
     initialLikes: 12,
     initialComments: 3,
+    // Added weather conditions
+    weather: {
+      temperature: "58°F",
+      condition: "Clear",
+      humidity: "45%",
+      windSpeed: "8 mph",
+      visibility: "10+ miles",
+    },
+    // Added image gallery
+    images: [
+      {
+        url: "/placeholder.svg?height=300&width=400",
+        caption: "Starting the ride at sunrise",
+        timestamp: "6:15 AM",
+      },
+      {
+        url: "/placeholder.svg?height=300&width=400",
+        caption: "Amazing canyon views",
+        timestamp: "7:30 AM",
+      },
+      {
+        url: "/placeholder.svg?height=300&width=400",
+        caption: "Quick photo stop at the overlook",
+        timestamp: "8:45 AM",
+      },
+      {
+        url: "/placeholder.svg?height=300&width=400",
+        caption: "The crew taking a break",
+        timestamp: "9:20 AM",
+      },
+    ],
     comments: [
       {
         id: 1,
@@ -57,10 +96,39 @@ const rideData = {
     avgSpeed: "35.7 mph",
     motorcycle: "Honda CB650R",
     rideWith: [],
+    mapCenter: { lat: 36.2704, lng: -121.8081 },
+    routeMarkers: [
+      { lat: 36.4581, lng: -121.9018, title: "Start - Carmel" },
+      { lat: 36.0827, lng: -121.6564, title: "End - San Simeon" },
+    ],
     routeImage: "/placeholder.svg?height=400&width=800",
     timestamp: "4 hours ago",
     initialLikes: 8,
     initialComments: 1,
+    weather: {
+      temperature: "65°F",
+      condition: "Partly Cloudy",
+      humidity: "72%",
+      windSpeed: "12 mph",
+      visibility: "8 miles",
+    },
+    images: [
+      {
+        url: "/placeholder.svg?height=300&width=400",
+        caption: "Stunning ocean views along PCH",
+        timestamp: "10:30 AM",
+      },
+      {
+        url: "/placeholder.svg?height=300&width=400",
+        caption: "Big Sur coastline",
+        timestamp: "11:45 AM",
+      },
+      {
+        url: "/placeholder.svg?height=300&width=400",
+        caption: "Perfect lunch spot",
+        timestamp: "12:30 PM",
+      },
+    ],
     comments: [
       {
         id: 1,
@@ -79,6 +147,8 @@ export default function RidePage({ params }) {
   const [newComment, setNewComment] = useState("")
   const [likedRide, setLikedRide] = useState(false)
   const [bookmarkedRide, setBookmarkedRide] = useState(false)
+  // Added state for image gallery
+  const [selectedImage, setSelectedImage] = useState(null)
 
   const ride = rideData[params.id]
 
@@ -102,7 +172,7 @@ export default function RidePage({ params }) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8" style={{ maxWidth: "800px" }}>
       <div className="mb-4">
         <Button variant="outline" onClick={() => router.back()}>
           ← Back to Feed
@@ -110,6 +180,16 @@ export default function RidePage({ params }) {
       </div>
 
       <Card>
+        {/* Added Google Map at the top */}
+        <div>
+          <GoogleMap
+            center={ride.mapCenter}
+            zoom={11}
+            markers={ride.routeMarkers}
+            className="w-full h-96 rounded-t-lg"
+          />
+        </div>
+
         <CardHeader>
           <div className="flex items-center gap-3 mb-4">
             <img
@@ -176,6 +256,70 @@ export default function RidePage({ params }) {
               <p className="text-gray-600">Avg Speed</p>
             </div>
           </div>
+
+          {/* Added Weather Conditions Section */}
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+            <h3 className="font-bold text-black mb-3">Weather Conditions</h3>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="text-center">
+                <p className="font-medium text-gray-600">Temperature</p>
+                <p className="text-lg font-bold text-black">{ride.weather.temperature}</p>
+              </div>
+              <div className="text-center">
+                <p className="font-medium text-gray-600">Condition</p>
+                <p className="text-lg font-bold text-black">{ride.weather.condition}</p>
+              </div>
+              <div className="text-center">
+                <p className="font-medium text-gray-600">Humidity</p>
+                <p className="text-lg font-bold text-black">{ride.weather.humidity}</p>
+              </div>
+              <div className="text-center">
+                <p className="font-medium text-gray-600">Wind Speed</p>
+                <p className="text-lg font-bold text-black">{ride.weather.windSpeed}</p>
+              </div>
+              <div className="text-center">
+                <p className="font-medium text-gray-600">Visibility</p>
+                <p className="text-lg font-bold text-black">{ride.weather.visibility}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Added Image Gallery Section */}
+          <div className="mb-6">
+            <h3 className="font-bold text-black mb-4">Ride Photos ({ride.images.length})</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {ride.images.map((image, index) => (
+                <div key={index} className="cursor-pointer group" onClick={() => setSelectedImage(image)}>
+                  <img
+                    src={image.url || "/placeholder.svg"}
+                    alt={image.caption}
+                    className="w-full h-32 object-cover rounded-lg bg-gray-100 group-hover:opacity-90 transition-opacity"
+                  />
+                  <p className="text-sm text-gray-600 mt-1">{image.timestamp}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Image Modal */}
+          {selectedImage && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+              onClick={() => setSelectedImage(null)}
+            >
+              <div className="max-w-4xl max-h-full">
+                <img
+                  src={selectedImage.url || "/placeholder.svg"}
+                  alt={selectedImage.caption}
+                  className="max-w-full max-h-full object-contain rounded-lg"
+                />
+                <div className="bg-white p-4 rounded-b-lg">
+                  <p className="font-medium text-black">{selectedImage.caption}</p>
+                  <p className="text-sm text-gray-600">{selectedImage.timestamp}</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="flex items-center justify-between mb-6 pt-4 border-t">
             <div className="flex items-center gap-4">

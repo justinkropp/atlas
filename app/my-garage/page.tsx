@@ -53,6 +53,11 @@ const gear = [
     purchaseDate: "2023-08-15",
     notes: "Primary helmet, very comfortable for long rides",
     image: "/placeholder.svg?height=100&width=100",
+    purchaseLink: "https://revzilla.com/motorcycle/shoei-rf-1400-helmet",
+    price: "$549.99",
+    rating: 4.8,
+    reviewNotes:
+      "Outstanding helmet with excellent ventilation and noise reduction. The fit is perfect and it's incredibly comfortable even on 8+ hour rides. The visor mechanism is smooth and the build quality is top-notch.",
   },
   {
     id: 2,
@@ -62,6 +67,11 @@ const gear = [
     purchaseDate: "2022-05-20",
     notes: "Great protection, some wear on elbows",
     image: "/placeholder.svg?height=100&width=100",
+    purchaseLink: "https://alpinestars.com/products/gp-pro-jacket",
+    price: "$399.95",
+    rating: 4.5,
+    reviewNotes:
+      "Solid protection with good airflow. The armor is substantial and the fit is athletic. Some wear showing after 2 years of regular use but still very functional. Would buy again.",
   },
   {
     id: 3,
@@ -71,6 +81,11 @@ const gear = [
     purchaseDate: "2023-03-10",
     notes: "Need replacement soon, palm wear visible",
     image: "/placeholder.svg?height=100&width=100",
+    purchaseLink: "https://dainese.com/us/en/delta-3-gloves",
+    price: "$89.95",
+    rating: 4.2,
+    reviewNotes:
+      "Good gloves with decent protection but the palm material wears out faster than expected. Comfortable fit and good dexterity for controls. Next time I'll look for something more durable.",
   },
   {
     id: 4,
@@ -80,6 +95,11 @@ const gear = [
     purchaseDate: "2023-11-02",
     notes: "New boots, great ankle protection",
     image: "/placeholder.svg?height=100&width=100",
+    purchaseLink: "https://tcxboots.com/en/street-ace-boots",
+    price: "$179.99",
+    rating: 4.7,
+    reviewNotes:
+      "Excellent boots that look great and provide solid protection. Very comfortable for walking and riding. The ankle protection is reassuring and they're waterproof as advertised. Highly recommend.",
   },
   {
     id: 5,
@@ -89,6 +109,11 @@ const gear = [
     purchaseDate: "2022-07-18",
     notes: "Adventure pants, very durable",
     image: "/placeholder.svg?height=100&width=100",
+    purchaseLink: "https://revitsport.com/en/sand-4-pants",
+    price: "$449.99",
+    rating: 4.6,
+    reviewNotes:
+      "Outstanding adventure pants with removable liner and excellent ventilation. The knee armor is comfortable and the fit is perfect. Expensive but worth every penny for serious touring.",
   },
 ]
 
@@ -115,6 +140,32 @@ const maintenanceReminders = [
 
 export default function MyGaragePage() {
   const [activeSection, setActiveSection] = useState("motorcycles")
+
+  // Helper function to render star rating
+  const renderStars = (rating) => {
+    const fullStars = Math.floor(rating)
+    const hasHalfStar = rating % 1 !== 0
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0)
+
+    return (
+      <div className="flex items-center gap-1">
+        {[...Array(fullStars)].map((_, i) => (
+          <span key={i} style={{ color: "var(--geist-foreground)" }}>
+            ★
+          </span>
+        ))}
+        {hasHalfStar && <span style={{ color: "var(--geist-foreground)" }}>☆</span>}
+        {[...Array(emptyStars)].map((_, i) => (
+          <span key={i} style={{ color: "var(--geist-accents-3)" }}>
+            ☆
+          </span>
+        ))}
+        <span className="ml-1" style={{ color: "var(--geist-accents-5)" }}>
+          ({rating})
+        </span>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -239,14 +290,44 @@ export default function MyGaragePage() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="mb-4">
-                      <p className="text-sm font-medium text-gray-600">Purchase Date</p>
-                      <p className="text-sm text-gray-700">{item.purchaseDate}</p>
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Price Paid</p>
+                        <p className="text-sm font-bold text-gray-900">{item.price}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Purchase Date</p>
+                        <p className="text-sm text-gray-700">{item.purchaseDate}</p>
+                      </div>
                     </div>
-                    <div className="border-t pt-4">
+
+                    <div className="mb-4">
+                      <p className="text-sm font-medium text-gray-600 mb-1">My Rating</p>
+                      {renderStars(item.rating)}
+                    </div>
+
+                    <div className="mb-4">
+                      <p className="text-sm font-medium text-gray-600 mb-1">Purchased From</p>
+                      <a
+                        href={item.purchaseLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:text-blue-800 underline"
+                      >
+                        View Product Page
+                      </a>
+                    </div>
+
+                    <div className="border-t pt-4 mb-4">
                       <p className="text-sm font-medium text-gray-600 mb-1">Notes</p>
                       <p className="text-sm text-gray-700">{item.notes}</p>
                     </div>
+
+                    <div className="border-t pt-4">
+                      <p className="text-sm font-medium text-gray-600 mb-1">My Review</p>
+                      <p className="text-sm text-gray-700">{item.reviewNotes}</p>
+                    </div>
+
                     <div className="flex gap-2 mt-4">
                       <Button variant="outline" size="sm">
                         Edit Details

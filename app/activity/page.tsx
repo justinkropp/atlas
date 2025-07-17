@@ -2,7 +2,9 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardDescription } from "@/components/ui/card"
+// Added GoogleMap component import
+import { GoogleMap } from "@/components/google-map"
 
 // Updated to show activities from other riders the user follows
 const followedRiderActivities = [
@@ -22,9 +24,14 @@ const followedRiderActivities = [
       { username: "speed_demon", avatar: "/placeholder.svg?height=32&width=32" },
       { username: "mountain_rider", avatar: "/placeholder.svg?height=32&width=32" },
     ],
+    // Added map coordinates for Angeles Crest Highway
+    mapCenter: { lat: 34.2804, lng: -118.0104 },
+    routeMarkers: [
+      { lat: 34.2804, lng: -118.0104, title: "Start - Angeles Crest Highway" },
+      { lat: 34.3774, lng: -117.9048, title: "End - Wrightwood" },
+    ],
     routeImage: "/placeholder.svg?height=200&width=400",
     timestamp: "2 hours ago",
-    // Added initial interaction counts
     initialLikes: 12,
     initialComments: 3,
   },
@@ -41,6 +48,12 @@ const followedRiderActivities = [
     avgSpeed: "35.7 mph",
     motorcycle: "Honda CB650R",
     rideWith: [],
+    // Added map coordinates for Big Sur
+    mapCenter: { lat: 36.2704, lng: -121.8081 },
+    routeMarkers: [
+      { lat: 36.4581, lng: -121.9018, title: "Start - Carmel" },
+      { lat: 36.0827, lng: -121.6564, title: "End - San Simeon" },
+    ],
     routeImage: "/placeholder.svg?height=200&width=400",
     timestamp: "4 hours ago",
     initialLikes: 8,
@@ -59,6 +72,9 @@ const followedRiderActivities = [
     avgSpeed: "36.2 mph",
     motorcycle: "Kawasaki Ninja ZX-6R",
     rideWith: [{ username: "track_master", avatar: "/placeholder.svg?height=32&width=32" }],
+    // Added map coordinates for Laguna Seca
+    mapCenter: { lat: 36.5844, lng: -121.7536 },
+    routeMarkers: [{ lat: 36.5844, lng: -121.7536, title: "Laguna Seca Raceway" }],
     routeImage: "/placeholder.svg?height=200&width=400",
     timestamp: "6 hours ago",
     initialLikes: 15,
@@ -81,6 +97,12 @@ const followedRiderActivities = [
       { username: "off_road_king", avatar: "/placeholder.svg?height=32&width=32" },
       { username: "adventure_buddy", avatar: "/placeholder.svg?height=32&width=32" },
     ],
+    // Added map coordinates for Joshua Tree
+    mapCenter: { lat: 33.8734, lng: -115.901 },
+    routeMarkers: [
+      { lat: 33.8734, lng: -115.901, title: "Joshua Tree National Park" },
+      { lat: 34.1358, lng: -116.0544, title: "Twentynine Palms" },
+    ],
     routeImage: "/placeholder.svg?height=200&width=400",
     timestamp: "8 hours ago",
     initialLikes: 23,
@@ -99,6 +121,12 @@ const followedRiderActivities = [
     avgSpeed: "25.5 mph",
     motorcycle: "Vespa GTS 300",
     rideWith: [],
+    // Added map coordinates for Downtown LA
+    mapCenter: { lat: 34.0522, lng: -118.2437 },
+    routeMarkers: [
+      { lat: 34.0522, lng: -118.2437, title: "Downtown LA" },
+      { lat: 34.0928, lng: -118.3287, title: "West Hollywood" },
+    ],
     routeImage: "/placeholder.svg?height=200&width=400",
     timestamp: "12 hours ago",
     initialLikes: 4,
@@ -141,7 +169,7 @@ export default function ActivityPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 max-w-3xl">
       <div className="mb-8">
         <h1 className="font-bold text-black mb-2">Activity Feed</h1>
         <p className="text-gray-600">See the latest rides from riders you follow</p>
@@ -149,7 +177,18 @@ export default function ActivityPage() {
 
       <div className="space-y-6">
         {followedRiderActivities.map((activity) => (
-          <Card key={activity.id} className="hover:shadow-md transition-shadow">
+          <Card key={activity.id} className="hover:shadow-md transition-shadow mx-auto" style={{ maxWidth: "800px" }}>
+            {/* Added max-width of 800px to each ride container */}
+            {/* Replaced placeholder image with Google Map */}
+            <div>
+              <GoogleMap
+                center={activity.mapCenter}
+                zoom={11}
+                markers={activity.routeMarkers}
+                className="w-full h-96 rounded-t-lg"
+              />
+            </div>
+
             <CardHeader>
               <div className="flex items-center gap-3 mb-4">
                 <img
@@ -163,7 +202,17 @@ export default function ActivityPage() {
                 </div>
               </div>
 
-              <CardTitle className="text-xl mb-2">{activity.title}</CardTitle>
+              {/* Fixed the title to use a proper clickable button instead of CardTitle onClick */}
+              <button
+                className="text-xl mb-2 cursor-pointer hover:text-gray-700 transition-colors font-bold text-left w-full"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  navigateToRide(activity.id)
+                }}
+              >
+                {activity.title}
+              </button>
               <CardDescription className="text-gray-600 mb-4">{activity.location}</CardDescription>
 
               <div className="mb-4">
@@ -194,13 +243,7 @@ export default function ActivityPage() {
             </CardHeader>
 
             <CardContent>
-              <div className="mb-4 cursor-pointer" onClick={() => navigateToRide(activity.id)}>
-                <img
-                  src={activity.routeImage || "/placeholder.svg"}
-                  alt={`Route map for ${activity.title}`}
-                  className="w-full h-48 object-cover rounded-lg bg-gray-100 hover:opacity-90 transition-opacity"
-                />
-              </div>
+              {/* Removed route image from here since it's now at the top */}
 
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div className="text-center">
