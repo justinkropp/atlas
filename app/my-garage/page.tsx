@@ -242,21 +242,17 @@ const maintenanceReminders = [
 
 export default function MyGaragePage() {
   const router = useRouter()
-
-  const [activeSection, setActiveSection] = useState<"motorcycles" | "gear">("motorcycles")
-
-  // Pre-select each bike’s main image
+  const [activeSection, setActiveSection] = useState("motorcycles")
   const [selectedImages, setSelectedImages] = useState<Record<number, string>>(() => {
-    const init: Record<number, string> = {}
-    motorcycles.forEach((m) => {
-      const main = m.motorcycle_images.find((img) => img.is_main)?.image_url || m.main_image_url
-      init[m.id] = main
+    const initial: Record<number, string> = {}
+    motorcycles.forEach((motorcycle) => {
+      const mainImage = motorcycle.motorcycle_images?.find((img) => img.is_main)?.image_url || motorcycle.main_image_url
+      initial[motorcycle.id] = mainImage
     })
-    return init
+    return initial
   })
 
-  // ⭐ helpers unchanged
-  const renderStars = (rating: number) => {
+  const renderStars = (rating) => {
     const fullStars = Math.floor(rating)
     const hasHalfStar = rating % 1 !== 0
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0)
@@ -281,15 +277,17 @@ export default function MyGaragePage() {
     )
   }
 
-  const handleImageSelect = (id: number, url: string) => setSelectedImages((p) => ({ ...p, [id]: url }))
+  const handleImageSelect = (motorcycleId: number, imageUrl: string) => {
+    setSelectedImages((prev) => ({
+      ...prev,
+      [motorcycleId]: imageUrl,
+    }))
+  }
 
-  const navigateToMotorcycleDetail = (id: number) => router.push(`/my-garage/motorcycle/${id}`)
+  const navigateToMotorcycleDetail = (motorcycleId: number) => {
+    router.push(`/my-garage/motorcycle/${motorcycleId}`)
+  }
 
-  // 3️⃣ use the local dummy arrays directly – no try/catch / Supabase calls.
-  const userMotorcycles = motorcycles
-  const userGear = gear
-
-  // JSX below unchanged except variables now come from the constants above.
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
@@ -324,7 +322,7 @@ export default function MyGaragePage() {
           <div className="lg:col-span-2">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Motorcycles</h2>
             <div className="space-y-4">
-              {userMotorcycles.map((motorcycle) => (
+              {motorcycles.map((motorcycle) => (
                 <Card key={motorcycle.id} className="transition-shadow mx-auto" style={{ maxWidth: "800px" }}>
                   <CardHeader>
                     <div className="flex justify-between items-start">
@@ -418,7 +416,7 @@ export default function MyGaragePage() {
           <div className="lg:col-span-2">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Gear</h2>
             <div className="space-y-4">
-              {userGear.map((item) => (
+              {gear.map((item) => (
                 <Card key={item.id} className="transition-shadow">
                   <CardHeader>
                     <div className="flex justify-between items-start">
@@ -547,12 +545,12 @@ export default function MyGaragePage() {
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">Total Motorcycles</span>
-                      <span className="font-semibold">{userMotorcycles.length}</span>
+                      <span className="font-semibold">{motorcycles.length}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">Active Bikes</span>
                       <span className="font-semibold text-green-600">
-                        {userMotorcycles.filter((m) => m.status === "active").length}
+                        {motorcycles.filter((m) => m.status === "active").length}
                       </span>
                     </div>
                     <div className="flex justify-between">
@@ -599,18 +597,18 @@ export default function MyGaragePage() {
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">Total Items</span>
-                      <span className="font-semibold">{userGear.length}</span>
+                      <span className="font-semibold">{gear.length}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">Excellent Condition</span>
                       <span className="font-semibold text-green-600">
-                        {userGear.filter((g) => g.condition === "excellent").length}
+                        {gear.filter((g) => g.condition === "excellent").length}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">Need Replacement</span>
                       <span className="font-semibold text-red-600">
-                        {userGear.filter((g) => g.condition === "fair").length}
+                        {gear.filter((g) => g.condition === "fair").length}
                       </span>
                     </div>
                   </div>
