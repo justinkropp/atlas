@@ -3,8 +3,6 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-// Added signOut import
-import { signOut } from "@/app/actions/auth"
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -15,11 +13,6 @@ const navItems = [
 
 export function Navigation() {
   const pathname = usePathname()
-
-  // Added sign out handler
-  const handleSignOut = async () => {
-    await signOut()
-  }
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b" style={{ borderColor: "var(--geist-accents-2)" }}>
@@ -46,10 +39,6 @@ export function Navigation() {
             <Link href="/profile" className="geist-button geist-button-secondary">
               Profile
             </Link>
-            {/* Added sign out button */}
-            <button onClick={handleSignOut} className="geist-button geist-button-secondary">
-              Sign Out
-            </button>
           </div>
         </div>
       </div>

@@ -1,175 +1,124 @@
 "use client"
-
-import type React from "react"
-import { useState } from "react"
-import { signUp, signIn } from "@/app/actions/auth"
+import { useRouter } from "next/navigation"
 
 export default function HomePage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSignUp, setIsSignUp] = useState(false)
-  const [message, setMessage] = useState("")
-  const [error, setError] = useState("")
+  const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!email || !password) return
-
-    setIsLoading(true)
-    setError("")
-    setMessage("")
-
-    try {
-      if (isSignUp) {
-        const result = await signUp(email, password)
-        if (result.error) {
-          setError(result.error)
-        } else {
-          setMessage("Check your email for a confirmation link!")
-        }
-      } else {
-        const result = await signIn(email, password)
-        if (result.error) {
-          setError(result.error)
-        }
-        // If successful, signIn will redirect automatically
-      }
-    } catch (err) {
-      setError("An unexpected error occurred")
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  if (message) {
-    return (
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-md mx-auto">
-          <div className="geist-card text-center">
-            <div
-              className="mx-auto w-12 h-12 flex items-center justify-center mb-4"
-              style={{ background: "var(--geist-foreground)", color: "var(--geist-background)" }}
-            >
-              <span className="font-bold">✓</span>
-            </div>
-            <h2 className="font-medium mb-2" style={{ color: "var(--geist-foreground)" }}>
-              Check Your Email
-            </h2>
-            <p className="mb-4" style={{ color: "var(--geist-accents-5)" }}>
-              We've sent a confirmation link to <strong>{email}</strong>
-            </p>
-            <p className="mb-4" style={{ color: "var(--geist-accents-4)" }}>
-              Click the link in your email to confirm your account and sign in.
-            </p>
-            <button
-              onClick={() => {
-                setMessage("")
-                setEmail("")
-                setPassword("")
-              }}
-              className="geist-button geist-button-secondary w-full"
-            >
-              Try Different Email
-            </button>
-          </div>
-        </div>
-      </div>
-    )
+  const handleGetStarted = () => {
+    router.push("/activity")
   }
 
   return (
     <div className="container mx-auto px-4 py-16">
-      <div className="max-w-md mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="font-medium mb-2" style={{ color: "var(--geist-foreground)" }}>
+      <div className="max-w-4xl mx-auto text-center">
+        <div className="mb-8">
+          <h1 className="font-medium mb-4" style={{ color: "var(--geist-foreground)", fontSize: "48px" }}>
             Welcome to Atlas
           </h1>
-          <p style={{ color: "var(--geist-accents-5)" }}>
+          <p className="text-xl mb-8" style={{ color: "var(--geist-accents-5)" }}>
             Track your motorcycle rides, manage your garage, and stay on the road
           </p>
         </div>
 
-        <div className="geist-card">
-          <h2 className="font-medium mb-2" style={{ color: "var(--geist-foreground)" }}>
-            {isSignUp ? "Create Account" : "Sign In"}
-          </h2>
-          <p className="mb-6" style={{ color: "var(--geist-accents-5)" }}>
-            {isSignUp ? "Create your Atlas account to start tracking rides" : "Sign in to your Atlas account"}
-          </p>
+        <div className="mb-12">
+          <button onClick={handleGetStarted} className="geist-button geist-button-primary text-lg px-8 py-4">
+            Get Started
+          </button>
+        </div>
 
-          {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700">{error}</div>}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              type="email"
-              placeholder="Enter your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="geist-input"
-            />
-            <input
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="geist-input"
-              minLength={6}
-            />
-            <button
-              type="submit"
-              className="geist-button geist-button-primary w-full"
-              disabled={isLoading || !email || !password}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+          <div className="geist-card text-center">
+            <div
+              className="mx-auto w-16 h-16 flex items-center justify-center mb-4"
+              style={{ background: "var(--geist-foreground)", color: "var(--geist-background)" }}
             >
-              {isLoading
-                ? isSignUp
-                  ? "Creating Account..."
-                  : "Signing In..."
-                : isSignUp
-                  ? "Create Account"
-                  : "Sign In"}
-            </button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <button
-              onClick={() => {
-                setIsSignUp(!isSignUp)
-                setError("")
-                setMessage("")
-              }}
-              className="text-sm hover:underline"
-              style={{ color: "var(--geist-accents-5)" }}
-            >
-              {isSignUp ? "Already have an account? Sign in" : "Don't have an account? Create one"}
-            </button>
+              <span className="font-bold text-xl">R</span>
+            </div>
+            <h3 className="font-medium mb-2" style={{ color: "var(--geist-foreground)" }}>
+              Track Your Rides
+            </h3>
+            <p style={{ color: "var(--geist-accents-5)" }}>
+              Log detailed ride information, routes, and statistics for every motorcycle adventure
+            </p>
           </div>
 
-          <div className="mt-6 text-center">
-            <p style={{ color: "var(--geist-accents-4)" }}>
-              By {isSignUp ? "creating an account" : "signing in"}, you agree to our Terms of Service and Privacy Policy
+          <div className="geist-card text-center">
+            <div
+              className="mx-auto w-16 h-16 flex items-center justify-center mb-4"
+              style={{ background: "var(--geist-foreground)", color: "var(--geist-background)" }}
+            >
+              <span className="font-bold text-xl">G</span>
+            </div>
+            <h3 className="font-medium mb-2" style={{ color: "var(--geist-foreground)" }}>
+              Manage Your Garage
+            </h3>
+            <p style={{ color: "var(--geist-accents-5)" }}>
+              Keep track of your motorcycles, gear, modifications, and maintenance schedules
+            </p>
+          </div>
+
+          <div className="geist-card text-center">
+            <div
+              className="mx-auto w-16 h-16 flex items-center justify-center mb-4"
+              style={{ background: "var(--geist-foreground)", color: "var(--geist-background)" }}
+            >
+              <span className="font-bold text-xl">C</span>
+            </div>
+            <h3 className="font-medium mb-2" style={{ color: "var(--geist-foreground)" }}>
+              Connect with Riders
+            </h3>
+            <p style={{ color: "var(--geist-accents-5)" }}>
+              Share your rides, discover new routes, and connect with the motorcycle community
             </p>
           </div>
         </div>
 
-        <div className="mt-8 text-center">
-          <h2 className="font-medium mb-4" style={{ color: "var(--geist-foreground)" }}>
-            What you can do:
+        <div className="mt-16 text-center">
+          <h2 className="font-medium mb-8" style={{ color: "var(--geist-foreground)", fontSize: "32px" }}>
+            Everything you need to track your rides
           </h2>
-          <div className="grid grid-cols-1 gap-3" style={{ color: "var(--geist-accents-5)" }}>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2" style={{ background: "var(--geist-foreground)" }}></div>
-              Track your daily motorcycle rides and routes
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+            <div className="flex items-start gap-3">
+              <div className="w-2 h-2 mt-2" style={{ background: "var(--geist-foreground)" }}></div>
+              <div>
+                <h4 className="font-medium mb-1" style={{ color: "var(--geist-foreground)" }}>
+                  Route Mapping
+                </h4>
+                <p style={{ color: "var(--geist-accents-5)" }}>
+                  Interactive maps with GPS tracking and route visualization
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2" style={{ background: "var(--geist-foreground)" }}></div>
-              Log detailed ride information and statistics
+            <div className="flex items-start gap-3">
+              <div className="w-2 h-2 mt-2" style={{ background: "var(--geist-foreground)" }}></div>
+              <div>
+                <h4 className="font-medium mb-1" style={{ color: "var(--geist-foreground)" }}>
+                  Ride Statistics
+                </h4>
+                <p style={{ color: "var(--geist-accents-5)" }}>Distance, duration, speed, and weather tracking</p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2" style={{ background: "var(--geist-foreground)" }}></div>
-              Manage your motorcycle garage and maintenance
+            <div className="flex items-start gap-3">
+              <div className="w-2 h-2 mt-2" style={{ background: "var(--geist-foreground)" }}></div>
+              <div>
+                <h4 className="font-medium mb-1" style={{ color: "var(--geist-foreground)" }}>
+                  Garage Management
+                </h4>
+                <p style={{ color: "var(--geist-accents-5)" }}>
+                  Track motorcycles, gear, modifications, and maintenance
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-2 h-2 mt-2" style={{ background: "var(--geist-foreground)" }}></div>
+              <div>
+                <h4 className="font-medium mb-1" style={{ color: "var(--geist-foreground)" }}>
+                  Social Features
+                </h4>
+                <p style={{ color: "var(--geist-accents-5)" }}>
+                  Share rides, follow other riders, and discover new routes
+                </p>
+              </div>
             </div>
           </div>
         </div>
